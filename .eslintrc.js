@@ -7,7 +7,8 @@ module.exports = {
 
     extends: [
         "eslint:recommended",
-        "plugin:vue/vue3-recommended"
+        "plugin:vue/vue3-recommended",
+        "@vue/typescript"
     ],
     rules: {
         "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
@@ -18,5 +19,8 @@ module.exports = {
         "semi": ["warn"]
     },
 
-    parser: "vue-eslint-parser"
+    parser: "vue-eslint-parser",
+    parserOptions: {
+      parser: "@typescript-eslint/parser"
+    }
 };
