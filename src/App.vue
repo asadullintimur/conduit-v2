@@ -1,30 +1,56 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view/>
+  <div
+    v-if="authorizeIsProcessing"
+    class="loader"
+  >
+    ...Loading
+  </div>
+
+  <template
+    v-else
+  >
+    <header-layout />
+
+    <router-view />
+
+    <footer-layout />
+  </template>
 </template>
 
+<script setup>
+import HeaderLayout from "@/components/Layout/Header/index.vue";
+import FooterLayout from "@/components/Layout/Footer/index.vue";
+
+import {useAuthStore} from "@/stores/auth";
+
+import {ref} from "vue";
+
+import JWTService from "@/utils/services/JWTService";
+
+const authStore = useAuthStore(),
+    { getUser } = authStore;
+
+const authorizeIsProcessing = ref(false);
+
+async function authorize() {
+  //TODO: add  stylized loader while authorize processing
+  authorizeIsProcessing.value = true;
+
+  try {
+    const token = JWTService.getToken();
+
+    if (!token) return;
+
+    await getUser();
+  } catch {
+    this.$showErrorToast("При попытке авторизации произошла ошибка, необходимо перезайти в систему");
+  } finally {
+    authorizeIsProcessing.value = false;
+  }
+}
+
+authorize();
+</script>
+
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-nav {
-  padding: 30px;
-}
-
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-nav a.router-link-exact-active {
-  color: #42b983;
-}
 </style>
