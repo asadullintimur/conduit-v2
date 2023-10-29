@@ -13,21 +13,18 @@
   </ul>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import type {Errors} from "@/utils/ts/types/common";
+
 defineOptions({
   name: "ErrorMessages"
 });
 
-defineProps({
-  errors: {
-    validator(prop) {
-      return typeof prop === "object" || prop === null;
-    },
-    required: true
-  }
-});
+defineProps<{
+  errors: Errors
+}>();
 
-function getFieldErrorsOutput(field, fieldErrors) {
+function getFieldErrorsOutput(field: string, fieldErrors: Array<string>) {
   const fieldErrorsString =  fieldErrors.join(",");
 
   return `${field}: ${fieldErrorsString}`;

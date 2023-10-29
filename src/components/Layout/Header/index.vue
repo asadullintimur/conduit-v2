@@ -68,9 +68,10 @@
 </template>
 
 
-<script setup>
-import {useAuthStore} from "@/stores/auth";
+<script setup lang="ts">
 import {toRefs} from "vue";
+
+import {useAuthStore} from "@/stores/auth";
 
 defineOptions({
   name: "HeaderLayout"

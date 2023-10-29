@@ -58,10 +58,17 @@
 </template>
 
 
-<script setup>
+<script setup lang="ts">
 import {reactive, ref} from "vue";
+import type {Ref} from "vue";
+
 import {useAuthStore} from "@/stores/auth";
 import {useRouter} from "vue-router";
+
+import {LoginCredentials} from "@/utils/ts/types/auth";
+import {Errors} from "@/utils/ts/types/common";
+
+import axios from "axios";
 
 defineOptions({
   name: "LoginView"
@@ -71,11 +78,11 @@ const authStore = useAuthStore();
 
 const router = useRouter();
 
-const credentials = reactive({
-      email: "pizda1@pizda.com",
-      password: "test"
+const credentials: LoginCredentials = reactive({
+      email: "sobaka@sobaka.com",
+      password: "sobaka"
     }),
-    errors = ref(null),
+    errors: Ref<Errors> = ref(null),
     loginIsProcessing = ref(false);
 
 async function login() {
@@ -88,20 +95,21 @@ async function login() {
 
     router.push({name: "home"});
   } catch (error) {
-    handleLoginError(error);
+    if (axios.isAxiosError(error)) {
+      const respErrors = error.response?.data.errors;
+
+      if (!respErrors) return;
+
+      errors.value = respErrors;
+
+      return;
+    }
+
+    throw error;
   } finally {
     loginIsProcessing.value = false;
   }
 }
-
-function handleLoginError(error) {
-  const respErrors = error.response?.data.errors;
-
-  if (!respErrors) return;
-
-  errors.value = respErrors;
-}
-
 </script>
 
 <style scoped>

@@ -1,15 +1,14 @@
-import {createRouter, createWebHistory} from "vue-router";
+import {createRouter, createWebHistory, RouteRecordRaw} from "vue-router";
 
-import ACCESS from "@/utils/constants/router/access";
 import {useAuthStore} from "@/stores/auth";
 
-const routes = [
+const routes: Array<RouteRecordRaw> = [
   {
     path: "/register",
     name: "register",
     component: () => import("@/views/Register.vue"),
     meta: {
-      access: ACCESS.GUEST
+      requiresAuth: false
     }
   },
   {
@@ -17,7 +16,7 @@ const routes = [
     name: "login",
     component: () => import("@/views/Login.vue"),
     meta: {
-      access: ACCESS.GUEST
+      requiresAuth: false
     }
   },
   {
@@ -25,20 +24,20 @@ const routes = [
     name: "home",
     component: () => import("@/views/Home.vue"),
     meta: {
-      access: ACCESS.ALL
+      requiresAuth: false
     }
   },
-  {
-    path: "/settings",
-    name: "settings",
-    meta: {
-      access: ACCESS.USER
-    }
-  }
+  // {
+  //   path: "/settings",
+  //   name: "settings",
+  //   meta: {
+  //     access: ACCESS.USER
+  //   }
+  // }
 ];
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+  history: createWebHistory(),
   routes
 });
 
@@ -46,8 +45,7 @@ router.beforeEach((from, to) => {
   const authStore = useAuthStore(),
       {isAuthorized} = authStore;
 
-  console.log(from);
-  if (to.meta.access === ACCESS.USER && !isAuthorized) return {name: "login"};
-  if (to.meta.access === ACCESS.GUEST && isAuthorized) return false;
+  if (to.meta.requiresAuth && !isAuthorized) return {name: "login"};
 });
+
 export default router;

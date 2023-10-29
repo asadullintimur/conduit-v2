@@ -14,7 +14,7 @@
 </template>
 
 
-<script setup>
+<script setup lang="ts">
 defineOptions({
   name: "FooterLayout"
 });

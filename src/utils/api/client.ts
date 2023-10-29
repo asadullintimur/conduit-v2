@@ -2,7 +2,7 @@ import axios from "axios";
 
 import {useAuthStore} from "@/stores/auth";
 
-import HTTP_STATUSES from "@/utils/constants/httpStatuses";
+import {HTTP_STATUSES} from "@/utils/ts/enums/httpStatuses";
 import JWTService from "@/utils/services/JWTService";
 
 const apiClient =  axios.create({

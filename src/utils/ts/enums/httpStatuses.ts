@@ -1,0 +1,4 @@
+export enum HTTP_STATUSES {
+    VALIDATION_ERROR = 422,
+    UNAUTHORIZED = 401
+}

@@ -70,10 +70,17 @@
 </template>
 
 
-<script setup>
+<script setup lang="ts">
 import {reactive, ref} from "vue";
-import {useAuthStore} from "@/stores/auth";
+import type {Ref} from "vue";
+
 import {useRouter} from "vue-router";
+import {useAuthStore} from "@/stores/auth";
+
+import {RegisterCredentials} from "@/utils/ts/types/auth";
+import {Errors} from "@/utils/ts/types/common";
+
+import axios from "axios";
 
 defineOptions({
   name: "RegisterView"
@@ -83,11 +90,11 @@ const authStore = useAuthStore();
 
 const router = useRouter();
 
-const credentials = reactive({
-      username: "pizda1",
-      email: "pizda1@pizda.com",
-      password: "test"
-    }), errors = ref(null),
+const credentials: RegisterCredentials = reactive({
+      username: "sobaka1",
+      email: "sobaka1@sobaka.com",
+      password: "sobaka"
+    }), errors: Ref<Errors> = ref(null),
     registerIsProcessing = ref(false);
 
 async function register() {
@@ -100,18 +107,20 @@ async function register() {
 
     router.push({name: "home"});
   } catch (error) {
-    handleRegisterError(error);
+    if (axios.isAxiosError(error)) {
+      const respErrors = error.response?.data.errors;
+
+      if (!respErrors) return;
+
+      errors.value = respErrors;
+
+      return;
+    }
+
+    throw error;
   } finally {
     registerIsProcessing.value = false;
   }
-}
-
-function handleRegisterError(error) {
-  const respErrors = error.response?.data.errors;
-
-  if (!respErrors) return;
-
-  errors.value = respErrors;
 }
 </script>
 

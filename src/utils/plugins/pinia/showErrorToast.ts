@@ -1,4 +1,4 @@
-import showErrorToast from "@/utils/helpers/showErrorToast";
+import showErrorToast  from "@/utils/helpers/showErrorToast";
 
 export default function() {
     return {

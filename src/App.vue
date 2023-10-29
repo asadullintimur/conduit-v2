@@ -26,6 +26,7 @@ import {useAuthStore} from "@/stores/auth";
 import {ref} from "vue";
 
 import JWTService from "@/utils/services/JWTService";
+import showErrorToast from "@/utils/helpers/showErrorToast";
 
 const authStore = useAuthStore(),
     { getUser } = authStore;
@@ -43,7 +44,7 @@ async function authorize() {
 
     await getUser();
   } catch {
-    this.$showErrorToast("При попытке авторизации произошла ошибка, необходимо перезайти в систему");
+    showErrorToast("При попытке авторизации произошла ошибка, необходимо перезайти в систему");
   } finally {
     authorizeIsProcessing.value = false;
   }

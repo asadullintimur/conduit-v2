@@ -1,20 +1,28 @@
 import {defineStore} from "pinia";
 
 import {computed, ref} from "vue";
+import type {Ref} from "vue";
+
+import axios from "axios";
 
 import apiClient from "@/utils/api/client";
-import HTTP_STATUSES from "@/utils/constants/httpStatuses";
+import {HTTP_STATUSES} from "@/utils/ts/enums/httpStatuses";
 import showErrorToast from "@/utils/plugins/pinia/showErrorToast";
 import JWTService from "@/utils/services/JWTService";
+import { User, RegisterCredentials, RegisterPayload, LoginCredentials, LoginPayload } from "@/utils/ts/types/auth";
 
 export const useAuthStore = defineStore("auth", () => {
-    const user = ref(null);
+    const user: Ref<null | User> = ref(null);
 
     const isAuthorized = computed(() => !!user.value);
 
-    async function register(credentials) {
+    async function register(credentials: RegisterCredentials) {
         try {
-            const resp = await apiClient.post("/users", {user: credentials}),
+            const registerPayload: RegisterPayload = {
+                user: credentials
+            };
+
+            const resp = await apiClient.post("/users", registerPayload),
                 {data: {user: {token, ...respUser}}} = resp;
 
             user.value = respUser;
@@ -23,15 +31,21 @@ export const useAuthStore = defineStore("auth", () => {
 
             return resp;
         } catch (error) {
-            if (error.response?.status !== HTTP_STATUSES.VALIDATION_ERROR) showErrorToast();
+            if (axios.isAxiosError(error)) {
+                if (error.response?.status !== HTTP_STATUSES.VALIDATION_ERROR) showErrorToast();
+            }
 
             return Promise.reject(error);
         }
     }
 
-    async function login(credentials) {
+    async function login(credentials: LoginCredentials) {
         try {
-            const resp = await apiClient.post("/users/login", {user: credentials}),
+            const loginPayload: LoginPayload = {
+                user: credentials
+            };
+
+            const resp = await apiClient.post("/users/login", loginPayload),
                 {data: {user: {token, ...respUser}}} = resp;
 
             user.value = respUser;
@@ -40,7 +54,9 @@ export const useAuthStore = defineStore("auth", () => {
 
             return resp;
         } catch (error) {
-            if (error.response?.status !== HTTP_STATUSES.VALIDATION_ERROR) showErrorToast();
+            if (axios.isAxiosError(error)) {
+                if (error.response?.status !== HTTP_STATUSES.VALIDATION_ERROR) showErrorToast();
+            }
 
             return Promise.reject(error);
         }
